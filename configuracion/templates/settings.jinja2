@@ -1,0 +1,73 @@
+{%extends 'base.html'%}
+{% block content %}
+
+<div class="flex flex-row justify-between items-center mb-8">
+    <h1 class="text-3xl font-semibold text-[#758bfd]">
+        Configuración
+    </h1>
+</div>
+
+<div class="w-full bg-slate-50 border border-gray-200 rounded-lg shadow-xs font-sans p-6">
+    <div class="space-y-4">
+        <div class="border-b border-gray-100 pb-3">
+            <h2 class="text-lg font-bold text-gray-800">
+                Búsqueda en SUNAT
+            </h2>
+        </div>
+
+        <p class="text-sm text-gray-600 leading-relaxed">
+            Para habilitar la búsqueda por RUC, descargue el
+            <a href="https://www.sunat.gob.pe/descargaPRR/mrc137_padron_reducido.html"
+                class="text-blue-600 font-medium hover:underline italic">
+                padrón reducido RUC
+            </a>
+            e impórtelo en el siguiente formulario para actualizar la base de datos.
+        </p>
+
+        <form id="import-form" class="bg-gray-50 p-4 rounded-lg border border-gray-100" action="{% url 'import_contribuyentes' %}" method="post"
+        enctype='multipart/form-data'
+        hx-post="{% url 'import_contribuyentes' %}"
+        hx-target="#import-status-container"
+        hx-swap="innerHTML"
+        hx-encoding="multipart/form-data"
+        hx-indicator="#loading-indicator">
+          {% csrf_token %}
+            <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+                <div class="flex-grow">
+                    <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1 ml-1">
+                        Seleccionar Archivo
+                    </label>
+                    <input type="file" name="file" class="block w-full text-sm text-gray-500
+                                file:mr-4 file:py-2 file:px-4
+                                file:rounded-md file:border-0
+                                file:text-sm file:font-semibold
+                                file:bg-blue-50 file:text-blue-700
+                                hover:file:bg-blue-100
+                                border border-gray-200 rounded-md bg-white cursor-pointer focus:outline-none" required>
+                </div>
+                <button type="submit"
+                    class="sm:self-end bg-[#ff8600] hover:bg-[#e67900] transition-colors cursor-pointer text-white font-bold rounded-md px-6 py-2 shadow-sm text-sm uppercase">
+                    Enviar
+                </button>
+            </div>
+        </form>
+
+        <div id="import-status-container">
+        </div>
+
+        <div id="loading-indicator" class="htmx-indicator mt-4 text-center">
+            <span class="text-xs text-gray-500 italic">Subiendo archivo, por favor espere...</span>
+        </div>
+
+
+        <div class="flex items-center gap-2 px-1">
+            <span>⚠️</span>
+            <p class="text-xs text-gray-500 italic">
+                Esta operación puede tardar unos minutos. Asegúrese de realizarla únicamente cuando el sistema no esté
+                en uso intensivo.
+            </p>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,239 @@
+{%extends 'base.html'%}
+{% block content %}
+
+<div class="flex flex-row justify-between items-center mb-8">
+    <h1 class="text-3xl font-semibold text-[#758bfd]">
+        Calendario
+    </h1>
+    <button onclick="toggleSidebar()"
+        class="bg-[#ff8600] cursor-pointer text-white rounded-sm h-full py-2 px-4 shadow-sm hover:bg-[#e67900] transition">Nueva
+        tarea</button>
+</div>
+
+<div class="w-full bg-white border border-gray-200 rounded-lg shadow-xs font-sans p-6">
+    <div class="h-[700px] w-full" id='calendar'></div>
+</div>
+
+<div id="sidebar-overlay"
+    class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm z-40 hidden transition-opacity opacity-0"></div>
+
+<aside id="sidebar"
+    class="fixed top-0 left-0 z-50 h-screen w-80 md:w-xl bg-white shadow-2xl transform -translate-x-full transition-transform duration-300 ease-in-out border-r border-gray-200">
+    <form class="p-6 h-full flex flex-col" action="/calendario/" method="POST">
+        <div class="flex items-center justify-between mb-8">
+            <h2 class="text-xl font-semibold text-[#758bfd]">
+                Nueva Tarea
+            </h2>
+            <div onclick="toggleSidebar()" class="p-2 rounded-md hover:bg-gray-100 text-gray-500 cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </div>
+        </div>
+
+        <div class="space-y-4 flex-grow overflow-y-scroll -mx-2 px-2">
+            {% csrf_token %}
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Título</label>
+                <input type="text" name="titulo"
+                    class="w-full py-1.5 bg-white px-4 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-[#758bfd]"
+                    placeholder="Título de la tarea" required>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
+                <textarea name="descripcion" rows="3"
+                    class="w-full py-1.5 bg-white px-4 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-[#758bfd]"
+                    placeholder="Detalles de la tarea"></textarea>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Fecha Inicio</label>
+                    <input type="datetime-local" name="fecha_inicio" id="fecha_inicio_input"
+                        class="w-full py-1.5 bg-white px-4 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-[#758bfd]"
+                        required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Fecha Fin</label>
+                    <input type="datetime-local" name="fecha_fin" id="fecha_fin_input"
+                        class="w-full py-1.5 bg-white px-4 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-[#758bfd]"
+                        required>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Asignar a Contacto</label>
+                <select name="contacto"
+                    class="w-full py-1.5 bg-white px-4 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-[#758bfd]">
+                    {% for contacto in contactos %}
+                    <option value="{{contacto.id}}">{{ contacto.nombre }} {{ contacto.apellido }}
+                        ({{ contacto.empresa.nombre }})</option>
+                    {% endfor %}
+                </select>
+                <p class="text-[10px] text-gray-400 mt-1">* Se requiere actualizar la vista para ver los contactos</p>
+            </div>
+        </div>
+
+        <div class="pt-6 border-t flex gap-3">
+            <div onclick="toggleSidebar()"
+                class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 cursor-pointer text-center">
+                Cancelar</div>
+            <button
+                class="flex-1 px-4 py-2 bg-[#ff8600] text-white rounded-md cursor-pointer hover:bg-[#e67900] transition"
+                type="submit">Guardar</button>
+        </div>
+    </form>
+</aside>
+
+<aside id="edit-sidebar"
+    class="fixed top-0 right-0 z-50 h-screen w-80 md:w-xl bg-white shadow-2xl transform translate-x-full transition-transform duration-300 ease-in-out border-l border-gray-200">
+    <div class="p-6 h-full flex flex-col">
+        <div class="flex items-center justify-between mb-8">
+            <div>
+                <h2 class="text-xl font-semibold text-[#758bfd]">Detalles de la Tarea</h2>
+                <p class="text-sm text-gray-500">Actualiza la información de la tarea</p>
+            </div>
+            <button onclick="toggleEditSidebar()" class="p-2 rounded-md hover:bg-gray-100 text-gray-500">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <div id="tarea-detalles" class="flex-grow">
+            <div class="flex items-center justify-center h-full text-gray-400">
+                <p>Selecciona una tarea en el calendario</p>
+            </div>
+        </div>
+    </div>
+</aside>
+
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.20/index.global.min.js'></script>
+<script>
+     document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            locale: 'es',
+            buttonText: {
+                today: 'Hoy',
+                month: 'Mes',
+                week: 'Semana',
+                day: 'Día',
+                list: 'Lista'
+            },
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            },
+            themeSystem: 'standard',
+            selectable: true,
+            events: '/calendario/json/',
+            eventTextColor: '#ffffff',
+
+            select: function (info) {
+                document.getElementById('fecha_inicio_input').value = info.startStr + 'T09:00';
+                toggleSidebar();
+            },
+
+            eventClick: function (info) {
+                const eventId = info.event.id;
+
+                const detailContainer = document.getElementById('tarea-detalles');
+                detailContainer.innerHTML = '<div class="flex items-center justify-center h-full"><span class="animate-spin h-8 w-8 border-4 border-[#758bfd] border-t-transparent rounded-full"></span></div>';
+
+                htmx.ajax('GET', `/api/tarea/${eventId}/`, {
+                    target: '#tarea-detalles',
+                    swap: 'innerHTML'
+                });
+
+                if (document.getElementById('edit-sidebar').classList.contains('translate-x-full')) {
+                    toggleEditSidebar();
+                }
+            }
+        });
+        calendar.render();
+    });
+
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+        sidebar.classList.toggle('-translate-x-full');
+        toggleOverlay(overlay);
+    }
+
+    function toggleEditSidebar() {
+        const sidebar = document.getElementById('edit-sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+        sidebar.classList.toggle('translate-x-full');
+        toggleOverlay(overlay);
+    }
+
+    function toggleOverlay(overlay) {
+        if (overlay.classList.contains('hidden')) {
+            overlay.classList.remove('hidden');
+            setTimeout(() => overlay.classList.replace('opacity-0', 'opacity-100'), 10);
+        } else {
+            overlay.classList.replace('opacity-100', 'opacity-0');
+            setTimeout(() => overlay.classList.add('hidden'), 300);
+        }
+    }
+
+    document.getElementById('sidebar-overlay').addEventListener('click', () => {
+        const sidebar = document.getElementById('sidebar');
+        const editSidebar = document.getElementById('edit-sidebar');
+
+        if (!sidebar.classList.contains('-translate-x-full')) toggleSidebar();
+        if (!editSidebar.classList.contains('translate-x-full')) toggleEditSidebar();
+    });
+</script>
+
+<style>
+    .fc .fc-button-primary {
+        background-color: #758bfd;
+        border-color: #758bfd;
+    }
+
+    .fc .fc-button-primary:hover {
+        background-color: #5a74e0;
+        border-color: #5a74e0;
+    }
+
+    .fc .fc-button-primary:disabled {
+        background-color: #758bfd;
+        opacity: 0.65;
+    }
+
+    .fc .fc-toolbar-title {
+        color: #758bfd;
+        font-weight: 600;
+        text-transform: capitalize;
+    }
+
+    .fc .fc-col-header-cell-cushion {
+        color: #4b5563;
+        font-weight: 500;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.05em;
+    }
+
+    .fc-event {
+        cursor: pointer;
+        padding: 2px 4px;
+        border-radius: 4px;
+        border: none !important;
+        font-size: 0.85rem;
+    }
+
+    .fc-event-title {
+        text-wrap: wrap;
+    }
+</style>
+
+{% endblock %}

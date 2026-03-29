@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SimpleCRM</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js"
+        integrity="sha384-/TgkGk7p307TH7EXJDuUlgG3Ce1UVolAOFopFekQkkXihi5u/6OCvVKyz1W+idaz"
+        crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <header class="bg-white border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+
+                <nav class="hidden md:flex flex-1 items-center space-x-8">
+                    <a href="{%url 'home'%}" class="text-gray-600 hover:text-black transition">Empresas</a>
+                    <a href="{%url 'list_contacts'%}" class="text-gray-600 hover:text-black transition">Contactos</a>
+                </nav>
+
+                <div class="flex-shrink-0 flex items-center justify-center">
+                    <a href="{%url 'home'%}" class="flex items-center">
+                        <div class="flex flex-col text-center">
+                            <span class="text-sm text-[#758bfd]">Simple</span>
+                            <span class="text-2xl mt-[-8px] font-bold tracking-tight text-[#758bfd]">CRM</span>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="flex-1 flex items-center justify-end space-x-4">
+                    <a href="{%url 'calendario'%}" class="text-gray-600 hover:text-black transition">Calendario</a>
+                    <a href="{%url 'configuracion'%}"
+                        class="text-gray-600 hover:text-black transition">Configuración</a>
+                    {% if request.user.is_authenticated %}
+                    <span class="border-l-2 border-gray-200 pl-4">Hola, {{request.user | title}}</span>
+                    {% endif %}
+                </div>
+
+            </div>
+        </div>
+    </header>
+
+
+    <main>
+        <div class="py-4 px-8">
+            {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-{{message.tags}}">
+                {{message}}
+            </div>
+            {% endfor %}
+            {% endif %}
+
+            {% block content %}
+            {% endblock %}
+        </div>
+    </main>
+</body>
+
+</html>

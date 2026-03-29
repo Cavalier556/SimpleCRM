@@ -1,0 +1,32 @@
+<form class="flex flex-col space-y-2" hx-post="/api/contactos/{{ contacto.id }}/" hx-target="body" class="space-y-4">
+    {% csrf_token %}
+    <input type="text" name="nombre"
+        class="w-full py-1.5 bg-white px-4 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-teal-500"
+        placeholder="RUC" value="{{ contacto.nombre }}">
+    <input type="text" name="apellido"
+        class="w-full py-1.5 bg-white px-4 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-teal-500"
+        placeholder="Razón Social" value="{{ contacto.apellido }}">
+    <input type="email" name="correo"
+        class="w-full py-1.5 bg-white px-4 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-teal-500"
+        placeholder="Rubro" value="{{ contacto.correo }}">
+    <select name="empresa"
+        class="w-full py-1.5 bg-white px-4 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+        {% for empresa in empresas %}
+        <option value="{{empresa.id}}" {% if contacto.empresa.id == empresa.id %}selected{% endif %}>{{ empresa.nombre }}
+        </option>
+        {% endfor %}
+    </select>
+    <input type="text" name="cargo"
+        class="w-full py-1.5 bg-white px-4 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-teal-500"
+        placeholder="Telefono" value="{{ contacto.cargo }}">
+    <input type="text" name="telefono"
+        class="w-full py-1.5 bg-white px-4 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-teal-500"
+        placeholder="Telefono" value="{{ contacto.telefono }}">
+
+    <div class="pt-6 border-t flex flex-col gap-2">
+        <button type="submit"
+            class="w-full px-4 py-2 bg-[#758bfd] text-white rounded-md font-medium hover:bg-[#5a74e0] transition">
+            Actualizar
+        </button>
+    </div>
+</form>

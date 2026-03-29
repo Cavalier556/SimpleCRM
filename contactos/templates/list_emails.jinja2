@@ -1,0 +1,38 @@
+{%extends 'base.html'%}
+{% block content %}
+<div class="h-[75vh]">
+    <div class="flex flex-row justify-between items-center mb-8">
+        <h1 class="text-3xl font-semibold text-[#758bfd]">
+            Correos
+        </h1>
+        <a href="#" class="bg-[#ff8600] text-white rounded-sm h-full py-2 px-4">Enviar correo</a>
+    </div>
+
+    <div class="grid grid-cols-4 w-full h-full bg-white border border-gray-200 rounded-lg shadow-xs font-sans"
+        id="timeline" hx-get="get-timeline/" hx-trigger="load">
+        <div class="flex flex-col items-center p-3 border-b bg-slate-50 border-gray-100">
+            <p class="text-xl font-semibold border-b w-full text-center border-gray-200 pb-2">Lista de Correos</p>
+            <div class="overflow-scroll w-full">
+                {% for email in emails %}
+                <div class="w-fit">
+                    <a class="truncate" href="#{{ email.id }}">{{ email.subject}}</a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div
+            class="col-span-3 flex flex-col items-center justify-center border-b bg-white border-gray-100 scroll-smooth py-10">
+            <span class="text-4xl font-bold">Buscando correos...</span>
+            <svg class="animate-spin h-10 w-10 text-blue-600 mt-4" xmlns="http://www.w3.org/2000/svg" fill="none"
+                viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                </path>
+            </svg>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

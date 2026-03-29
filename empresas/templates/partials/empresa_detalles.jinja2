@@ -1,0 +1,25 @@
+<form class="flex flex-col space-y-2" hx-post="/api/empresa/{{ empresa.id }}/" hx-target="body" class="space-y-4">
+    {% csrf_token %}
+    <input type="text" name="ruc"
+        class="w-full py-1.5 bg-white px-4 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-teal-500"
+        placeholder="RUC" value="{{ empresa.ruc }}">
+    <input type="text" name="nombre"
+        class="w-full py-1.5 bg-white px-4 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-teal-500"
+        placeholder="Razón Social" value="{{ empresa.nombre }}">
+    <input type="text" name="rubro"
+        class="w-full py-1.5 bg-white px-4 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-teal-500"
+        placeholder="Rubro" value="{{ empresa.rubro }}">
+    <input type="text" name="direccion"
+        class="w-full py-1.5 bg-white px-4 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-teal-500"
+        placeholder="Dirección" value="{{ empresa.direccion }}">
+    <input type="text" name="telefono"
+        class="w-full py-1.5 bg-white px-4 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-teal-500"
+        placeholder="Telefono" value="{{ empresa.telefono }}">
+
+    <div class="pt-6 border-t flex flex-col gap-2">
+        <button type="submit"
+            class="w-full px-4 py-2 bg-[#758bfd] text-white rounded-md font-medium hover:bg-[#5a74e0] transition">
+            Actualizar
+        </button>
+    </div>
+</form>

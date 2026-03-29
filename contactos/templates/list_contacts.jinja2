@@ -1,0 +1,220 @@
+{%extends 'base.html'%}
+{% block content %}
+
+<div class="flex flex-row justify-between items-center mb-8">
+    <h1 class="text-3xl font-semibold text-[#758bfd]">
+        Contactos
+    </h1>
+    <button onclick="toggleSidebar()" class="bg-[#ff8600] text-white rounded-sm h-full py-2 px-4">Nuevo
+        contacto</button>
+</div>
+<div class="w-full bg-white border border-gray-200 rounded-lg shadow-xs font-sans">
+    <div class="flex items-center justify-between p-3 border-b bg-slate-50 border-gray-100">
+        <div class="relative w-128">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-3">
+                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+            </span>
+            <input type="text" name="nombre" hx-get="/contactos/" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                hx-trigger="keyup delay:200ms changed" hx-select="#search_results" hx-target="#search_results"
+                class="w-full py-1.5 pl-10 bg-white pr-4 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-teal-500"
+                placeholder="Buscar contactos por nombre o empresa" value="{{ request.GET.nombre }}">
+        </div>
+    </div>
+
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse" id="search_results">
+            <thead class="bg-slate-50 border-b border-gray-200">
+                <tr class="text-[11px] font-bold text-gray-600 uppercase tracking-wider">
+                    <th class="p-3 border-r border-gray-200">CONTACTO</th>
+                    <th class="p-3 border-r border-gray-200">CORREOS</th>
+                    <th class="p-3 border-r border-gray-200">EMPRESA</th>
+                    <th class="p-3 border-r border-gray-200">CARGO</th>
+                    <th class="p-3 border-r border-gray-200">FECHA DE CREACION</th>
+                    <th class="p-3 border-r border-gray-200">TELEFONO</th>
+                    <th class="p-3">EMAIL</th>
+                </tr>
+            </thead>
+            <tbody class="text-sm text-gray-700">
+                {% for contacto in contactos %}
+                <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                    <td class="p-3 border-r border-gray-100">
+                        <div class="flex items-center space-x-2">
+                            <img src="https://ui-avatars.com/api/?name={{ contacto.nombre }}&background=f97316&color=fff"
+                                class="w-6 h-6 rounded-full" />
+                            <div class="flex flex-col">
+                                <a class="text-[#758bfd] font-semibold hover:underline cursor-pointer"
+                                    hx-get="/api/contactos/{{contacto.id}}/" onclick="toggleEditSidebar()"
+                                    hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' hx-target="#empresa-detalles">
+                                    {{ contacto.nombre }} {{ contacto.apellido }}
+                                </a>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="p-3 border-r border-gray-100 underline"><a href="{{ contacto.id }}/correos">Ver
+                            Correos</a>
+                    </td>
+                    <td class="p-3 border-r border-gray-100">{{ contacto.empresa.nombre }}</td>
+                    <td class="p-3">{{ contacto.cargo }}</td>
+                    <td class="p-3 truncate">{{ contacto.fecha_creacion }}</td>
+                    <td class="p-3 truncate"> +{{ contacto.telefono|slice:":2" }} {{ contacto.telefono|slice:"2:" }}
+                    </td>
+                    <td class="p-3 truncate">{{ contacto.correo }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<div id="sidebar-overlay"
+    class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm z-40 hidden transition-opacity opacity-0"></div>
+
+<aside id="sidebar"
+    class="fixed top-0 left-0 z-50 h-screen w-80 md:w-xl bg-white shadow-2xl transform -translate-x-full transition-transform duration-300 ease-in-out">
+    <form class="p-6 h-full flex flex-col" action="/contactos/" method="POST">
+
+        <div class="flex items-center justify-between mb-8">
+            <h2 class="text-xl font-semibold text-[#758bfd]">
+                Nuevo Contacto
+            </h2>
+            <div onclick="toggleSidebar()" class="p-2 rounded-md hover:bg-gray-100 text-gray-500">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </div>
+        </div>
+
+        <div class="space-y-4 flex-grow overflow-y-scroll -mx-2 px-2">
+            {% csrf_token %}
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
+                <div class="flex flex-row gap-2">
+                    <input type="text" name="nombre"
+                        class="w-full py-1.5 bg-white px-4 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        required>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Apellido</label>
+                <input type="text" name="apellido"
+                    class="w-full py-1.5 bg-white px-4 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Correo</label>
+                <input type="email" name="correo"
+                    class="w-full py-1.5 bg-white px-4 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="ejemplo@correo.com">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Empresa</label>
+                <select name="empresa"
+                    class="w-full py-1.5 bg-white px-4 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    {% for empresa in empresas %}
+                    <option value="{{empresa.id}}">{{ empresa.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Cargo</label>
+                <input type="text" name="cargo"
+                    class="w-full py-1.5 bg-white px-4 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Cargo en la empresa">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Telefono</label>
+                <input type="text" name="telefono" id="telefono_input"
+                    class="w-full py-1.5 bg-white px-4 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Telefono de contacto" value="51">
+            </div>
+        </div>
+
+        <div class="pt-6 border-t flex gap-3">
+            <div onclick="toggleSidebar()"
+                class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 cursor-pointer text-center">
+                Cancelar</div>
+            <button class="flex-1 px-4 py-2 bg-[#ff8600] text-white rounded-md cursor-pointer"
+                type="submit">Guardar</button>
+        </div>
+
+    </form>
+</aside>
+
+<aside id="edit-sidebar"
+    class="fixed top-0 right-0 z-50 h-screen w-80 md:w-xl bg-white shadow-2xl transform translate-x-full transition-transform duration-300 ease-in-out border-l border-gray-200">
+    <div class="p-6 h-full flex flex-col">
+
+        <div class="flex items-center justify-between mb-8">
+            <div>
+                <h2 class="text-xl font-semibold text-[#758bfd]">Editar Contacto</h2>
+                <p class="text-sm text-gray-500">Actualizar información de el contacto</p>
+            </div>
+            <button onclick="toggleEditSidebar()" class="p-2 rounded-md hover:bg-gray-100 text-gray-500">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+        <div id="empresa-detalles">
+
+        </div>
+
+        <div class="pt-6 flex flex-col gap-2">
+            <button onclick="toggleEditSidebar()"
+                class="w-full px-4 py-2 text-gray-600 hover:text-gray-800 text-sm">Cancelar</button>
+        </div>
+    </div>
+</aside>
+
+
+
+
+<script>
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+
+        sidebar.classList.toggle('-translate-x-full');
+        toggleOverlay(overlay);
+    }
+
+
+    function toggleEditSidebar() {
+        const sidebar = document.getElementById('edit-sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+
+        sidebar.classList.toggle('translate-x-full');
+        toggleOverlay(overlay);
+    }
+
+    function toggleOverlay(overlay) {
+        if (overlay.classList.contains('hidden')) {
+            overlay.classList.remove('hidden');
+            setTimeout(() => overlay.classList.replace('opacity-0', 'opacity-100'), 10);
+        } else {
+            overlay.classList.replace('opacity-100', 'opacity-0');
+            setTimeout(() => overlay.classList.add('hidden'), 300);
+        }
+    }
+
+    document.getElementById('sidebar-overlay').addEventListener('click', () => {
+        const sidebar = document.getElementById('sidebar');
+        const editSidebar = document.getElementById('edit-sidebar');
+
+        if (!sidebar.classList.contains('-translate-x-full')) toggleSidebar();
+        if (!editSidebar.classList.contains('translate-x-full')) toggleEditSidebar();
+    });
+</script>
+
+{% endblock %}
