@@ -2,7 +2,7 @@
 
 **SimpleCRM** es una herramienta CRM personal que te permite organizar tus interacciones con socios y proveedores, revisar tus interacciones en gmail, y agendar tareas para el futuro.
 
-!(https://github.com/Cavalier556/SimpleCRM/blob/f486523fa03fbce06ab661e82301e9077059e46f/inicio.png)
+![Imagen del sistema](https://github.com/Cavalier556/SimpleCRM/blob/f486523fa03fbce06ab661e82301e9077059e46f/inicio.png)
 
 ## Características principaless
 * **Gestión de Empresas:** Registra las empresas con las que trabajas
