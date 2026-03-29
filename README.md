@@ -17,7 +17,6 @@
 <ul>
   <li>Crea un nuevo proyecto</li>
   <li>Activa el Gmail API</li>
-  <li>Activa el Gmail API</li>
   <li>Selecciona tipo externo para el OAuth</li>
   <li>Agrega tu correo a la lista de usuarios de prueba</li>
   <li>Crea una credencial y guarda el json como credentials.json</li>
